@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/cart}
+    username: ${SPRING_DATASOURCE_USERNAME:cart_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:cart_password}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: none
+cart:
+  inventory:
+    base-url: ${CART_INVENTORY_BASE_URL:http://localhost:8086}
+

@@ -36,13 +36,13 @@ public class CartService {
     }
 
     @Transactional
-    public CartResponse upsertItem(UUID userId, CartItemRequest req) {
+    public CartResponse upsertItem(UUID userId, CartItemRequest req, String authorizationHeader) {
         String productId = req.productId().trim();
         if (productId.isEmpty()) throw new CartValidationException("productId is required");
         if (req.quantity() <= 0) throw new CartValidationException("quantity must be >= 1");
 
         if (checkInventoryOnWrite) {
-            InventoryResponse inv = inventoryClient.getInventory(productId);
+            InventoryResponse inv = inventoryClient.getInventory(productId, authorizationHeader);
             if (inv == null) {
                 throw new CartValidationException("Inventory unavailable for productId=" + productId);
             }

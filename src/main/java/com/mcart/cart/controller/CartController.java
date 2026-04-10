@@ -5,6 +5,7 @@ import com.mcart.cart.dto.CartResponse;
 import com.mcart.cart.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -28,9 +29,13 @@ public class CartController {
     }
 
     @PostMapping("/items")
-    public ResponseEntity<CartResponse> upsert(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CartItemRequest req) {
+    public ResponseEntity<CartResponse> upsert(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,
+            @Valid @RequestBody CartItemRequest req
+    ) {
         UUID userId = UUID.fromString(jwt.getClaimAsString(CLAIM_USER_ID));
-        return ResponseEntity.ok(cartService.upsertItem(userId, req));
+        return ResponseEntity.ok(cartService.upsertItem(userId, req, authorization));
     }
 
     @DeleteMapping("/items/{productId}")
