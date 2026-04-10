@@ -1,0 +1,8 @@
+package com.mcart.cart.exception;
+
+public class CartValidationException extends RuntimeException {
+    public CartValidationException(String message) {
+        super(message);
+    }
+}
+
