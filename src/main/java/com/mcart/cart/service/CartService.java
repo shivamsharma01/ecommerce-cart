@@ -8,6 +8,7 @@ import com.mcart.cart.entity.CartItemEntity;
 import com.mcart.cart.exception.CartValidationException;
 import com.mcart.cart.repository.CartItemRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CartService {
 
     private final CartItemRepository cartItemRepository;
@@ -32,6 +34,7 @@ public class CartService {
                 .stream()
                 .map(e -> new CartItemResponse(e.getProductId(), e.getQuantity()))
                 .toList();
+        log.debug("Cart loaded userId={} lineCount={}", userId, items.size());
         return new CartResponse(userId.toString(), items);
     }
 
@@ -59,6 +62,7 @@ public class CartService {
         entity.setUpdatedAt(Instant.now());
         cartItemRepository.save(entity);
 
+        log.info("Cart line upserted userId={} productId={} quantity={}", userId, productId, req.quantity());
         return getCart(userId);
     }
 
@@ -66,11 +70,13 @@ public class CartService {
     public void removeItem(UUID userId, String productId) {
         if (productId == null || productId.isBlank()) return;
         cartItemRepository.deleteByUserIdAndProductId(userId, productId.trim());
+        log.info("Cart line removed userId={} productId={}", userId, productId.trim());
     }
 
     @Transactional
     public void clear(UUID userId) {
         cartItemRepository.deleteByUserId(userId);
+        log.info("Cart cleared userId={}", userId);
     }
 }
 
